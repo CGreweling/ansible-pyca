@@ -1,0 +1,32 @@
+---
+- hosts: testservers
+  remote_user: opencast
+  sudo: yes
+  tasks:
+  - name: install git
+    apt:  name=git state=latest
+  - name: install vim
+    apt: name=vim state=latest
+  - name: install pip
+    apt: name=python-pip state=latest
+  - name : install icalendar
+    pip: name=icalendar state=latest
+  - name : install python-dateutil
+    pip: name=python-dateutil state=latest
+  - name: install ntpdate
+    apt:  name=ntpdate state=latest  
+  - name: install xymon-client
+    apt: name=xymon-client state=latest
+- name : install pycurl
+    pip: name=pycurl state=latest
+  - name: Checkout pyCA
+    git: repo=https://github.com/lkiesow/pyCA/
+       dest=/home/opencast/pyCA
+       update=yes
+       force=yes
+
+  tasks:
+  - name: copy etc directory
+    copy: src=./etc dest=/home/opencast/pyCA/etc/ owner=opencast group=opencast mode=0644
+  - name: copy rec.sh
+  	copy: src rec.sh  dest=/home/opencast/ owner=opencast group=opencast mode=0644
