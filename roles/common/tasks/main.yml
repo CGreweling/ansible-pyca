@@ -1,0 +1,52 @@
+
+---
+- name: add backports
+  become: yes
+  apt_repository:
+     repo='deb http://ftp.debian.org/debian jessie-backports main'
+     state=present
+
+- name: copy pyCA
+  become: yes
+  copy:
+    src=./pyca/
+    dest=/home/pi/
+    owner=pi
+    group=pi
+    mode=0644
+
+- name: copy recsh
+  become: yes
+  copy:
+     src=./pyca/rec.sh
+     dest=/home/pi/
+     owner=pi
+     group=pi
+     mode=0644
+
+
+- name: install Dependencies
+  become: yes
+  apt:
+    name={{ item }}
+    state=latest
+    update_cache=yes
+
+  with_items:
+    - python-icalendar
+    - python-dateutil
+    - ntpdate
+    - xymon-client
+    - python-pycurl
+    - python-configobj
+    - ffmpeg
+    - rsync
+
+
+- name: enable autostart pyCA
+  become: yes
+  lineinfile:
+    dest="/etc/rc.local"
+    regexp="^exit 0"
+    line="su pi -c '/home/pi/pyCA/start.sh'
+          exit 0"
