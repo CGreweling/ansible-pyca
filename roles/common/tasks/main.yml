@@ -24,6 +24,9 @@
      group=pi
      mode=0644
 
+- name: update apt
+  apt:
+    update_cache=yes
 
 - name: install Dependencies
   become: yes
