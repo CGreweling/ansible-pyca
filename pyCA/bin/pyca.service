@@ -1,0 +1,14 @@
+[Unit]
+Description=Python Capture Agent
+Requires=local-fs.target
+
+[Service]
+Type=simple
+#KillMode=process
+WorkingDirectory=/opt/pyCA
+ExecStart=/usr/bin/python -m pyca run
+User=pyca
+Group=pyca
+
+[Install]
+WantedBy=multi-user.target

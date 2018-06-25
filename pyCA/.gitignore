@@ -1,0 +1,9 @@
+venv
+*.pyc
+*.pyo
+*.swp
+
+/recordings/*
+
+.coverage
+pyca.db

@@ -1,23 +1,22 @@
 ---
-- hosts:  131.173.172.68
+- hosts:  all 
   become: yes
   tasks:
 
-  - name: Install rpm-fusion 
-    command: "dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-26.noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-26.noarch.rpm"
-
-     
-  - name: copy rec.sh
-    copy: src=rec.sh  dest=/opt/pyCA/ owner=opencast group=opencast mode=0644
+  - name: Add User opencast
+    user:
+      name: opencast
+      shell: /bin/bash
+      groups: audio,video
+      append: yes
 
   - name: install Dependencies
-    dnf:
+    apt:
       name={{ item }} state=installed
     with_items:
       - python-icalendar
       - python-dateutil
       - ntpdate
-        #      - xymon-client
       - python-pycurl
       - python-configobj
       - python-flask
@@ -25,16 +24,31 @@
       - ffmpeg
       - rsync
 
+  - name: create folder
+    file:
+     path: /opt/pyCA
+     state: directory
+     mode: 0755
+
   - name: copy pyca
-    copy: 
-     src: ./pyCA/ 
-     dest: /opt/ 
+    copy: src=./pyCA/ dest=/opt/pyCA/ owner=opencast group=opencast mode=755
 
   - name: set owner and group
-    file: path=/home/opt/pyCA owner=opencast group=opencast mode=0644
-    
+    file: path=/opt/pyCA owner=opencast group=opencast mode=755
+
 
   - name: enable autostart pyCA
     copy:
-     srv: ./bin/
-     dest: /etc/system.d/system/
+     src: ./pyCA/bin/
+     dest: /etc/systemd/system/
+
+  - name: enable autostart
+    command: "systemctl enable pyca.service"
+
+  - name: set Hostname
+    command: hostnamectl set-hostname {{inventory_hostname}}
+
+  - name: install xymon-client
+    apt:
+     state: present
+     name: xymon-client
