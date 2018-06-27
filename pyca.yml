@@ -11,7 +11,7 @@
       append: yes
 
   - name: install Dependencies
-    apt:
+    dnf:
       name={{ item }} state=installed
     with_items:
       - python-icalendar
