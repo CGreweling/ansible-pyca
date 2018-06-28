@@ -10,6 +10,11 @@
       groups: audio,video
       append: yes
 
+  - name: install epel-release 
+    dnf:
+     name: http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-28.noarch.rpm
+     state: installed
+
   - name: install Dependencies
     dnf:
       name={{ item }} state=installed
@@ -23,6 +28,8 @@
       - python-sqlalchemy
       - ffmpeg
       - rsync
+      - libselinux-python
+      - libva-intel-driver
 
   - name: create folder
     file:
@@ -48,7 +55,11 @@
   - name: set Hostname
     command: hostnamectl set-hostname {{inventory_hostname}}
 
+  - name: download xymon-client
+    get_url: 
+     url: http://terabithia.org/rpms/xymon/f25/x86_64/xymon-client-4.3.28-1.fc25.x86_64.rpm
+     dest: /home/opencast/
+
   - name: install xymon-client
-    apt:
-     state: present
-     name: xymon-client
+    command: dnf -y install /home/opencast/xymon-client-4.3.28-1.fc25.x86_64.rpm
+
